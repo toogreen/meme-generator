@@ -61,8 +61,7 @@ class MemeGenerator extends Component {
 		    const img = new Image();
 		    img.src = dataUrl;
 
-		    $('.imgZone').append("<h2>Your generated image # " + this.state.count+ "</h2>")
-		    $('.imgZone').append(img)
+		    $('.imgZone').append(this.state.count > 1 && "<hr />").append("<h2>Your generated image # " + this.state.count+ "</h2>").append(img)
 		    $('.hidden').show();
 
 		  })
@@ -135,10 +134,12 @@ class MemeGenerator extends Component {
 
 
 				<div className="hidden">
-					<div className="close" onClick={this.closeModal}>X</div>
-					<h1>Use the image{this.state.count > 1 && "s"} below to copy it in other apps:</h1>
-					<div className="imgZone"></div>
-
+					<br />
+					<div className="imgContainer">
+						<div className="close" onClick={this.closeModal}>X</div>
+						<h1>Copy and paste the image{this.state.count > 1 && "s"} below</h1>
+						<span className="imgZone"></span>
+					</div>
 				</div>
 
 				

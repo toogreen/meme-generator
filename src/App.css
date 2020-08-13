@@ -180,6 +180,16 @@ footer a, footer a:hover{
   height: auto;
 }
 
+.imgContainer{
+  box-shadow: 10px 10px 10px #888888;
+  border: 1px solid black;
+  height: auto;
+}
+
+.imgZone{
+  height: auto;
+}
+
 .close{
   display: none;
   position: relative;
