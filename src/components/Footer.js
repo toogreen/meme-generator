@@ -3,7 +3,7 @@ import React from "react"
 function Footer(){
 	return (
 		<footer>
-			<p>Copyrights David Gagnon 2020 </p>
+			<h2>Copyrights <a href="https://toogreen.ca" target="_blank">David Gagnon</a> 2020 </h2>
 		</footer>
 	)
 }
