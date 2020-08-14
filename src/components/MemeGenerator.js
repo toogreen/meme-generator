@@ -2,9 +2,7 @@ import React, {Component} from "react"
 import Ad from "./Ad"
 import $ from "jquery"
 import domtoimage from "dom-to-image"
-//import ThumbList from "./ThumbList"
 import MemeList from "./MemeList"
-import memeDb from "./memeDb"
 
 class MemeGenerator extends Component {
 
