@@ -129,12 +129,12 @@ class MemeGenerator extends Component {
 				</form>
 
 				<select 
+					value={this.state.allMemeImgs.id}
 					name="favImage"
 					onChange={this.handleChange} 
 				>
-					<option value="">-- Please Choose a MEME</option>
+					<option value={this.state.allMemeImgs.id}>--SELECT A MEME--</option>
 					<MemeList 
-						handleChange={this.handleChange}
 						data={this.state}
 					/>
 				</select>
