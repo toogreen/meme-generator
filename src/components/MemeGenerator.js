@@ -3,6 +3,7 @@ import Ad from "./Ad"
 import $ from "jquery"
 import domtoimage from "dom-to-image"
 import MemeList from "./MemeList"
+import {MobileView} from "react-device-detect"
 
 class MemeGenerator extends Component {
 
@@ -148,6 +149,11 @@ class MemeGenerator extends Component {
 
 
 				<div className="hidden">
+
+					<MobileView>
+						    <p>{this.state.count > 0 && "If it didn't work on the last click, try clicking the above button one more time"}</p>
+					</MobileView>
+					
 					<br />
 					<div className="imgContainer">
 						<div className="close" onClick={this.closeModal}>X</div>
