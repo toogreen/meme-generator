@@ -14,7 +14,8 @@ class MemeGenerator extends Component {
 			randomImg: "http://i.imgflip.com/1bij.jpg",
 			allMemeImgs: [],
 			count: 0,
-			favImage: ""
+			favImage: "",
+			foo: ""
 		}
 		this.handleChange = this.handleChange.bind(this)
 		this.handleSubmit = this.handleSubmit.bind(this)
@@ -34,8 +35,9 @@ class MemeGenerator extends Component {
 	}
 
 	handleChange(event){
-		const {name, value, type} = event.target
+		const {name, value} = event.target
 		name === "favImage" ? this.setState({ randomImg: event.target.value }) : this.setState({[name]: value})
+
 	}
 
 	handleSubmit(event){
@@ -50,9 +52,12 @@ class MemeGenerator extends Component {
 
 		// set "randomImg" to the ".url"  of the random item I grabbed
 		this.setState({ randomImg: randMemeImg})
+
 	}
 
-	handleCopy(){
+	handleCopy(event){
+
+		event.preventDefault()
 
 		// Copy the content of the "meme" DIV and make it an image
 		const render = node =>
@@ -62,7 +67,8 @@ class MemeGenerator extends Component {
 		    const img = new Image();
 		    img.src = dataUrl;
 
-		    $('.imgZone').append(this.state.count > 1 && "<hr />").append("<h2>Your generated image # " + this.state.count+ "</h2>").append(img)
+		    $('.imgZone').append(this.state.count > 0 && "<hr />").append("<h2>Your generated image # " + this.state.count+ "</h2>")
+		    $('.imgZone').append(img)
 		    $('.hidden').show();
 
 		  })
@@ -81,10 +87,6 @@ class MemeGenerator extends Component {
 				count: prevState.count + 1
 			}
 		})
-
-		// Disabled the below as I don't like popup alerts
-		//const alertString = "Your image #" + (this.state.count + 1) + " was generated! Scroll down to see it below"
-		//alert(alertString)
 
 		// scroll down to new image
 		window.scrollTo(0,document.body.scrollHeight);
@@ -127,11 +129,10 @@ class MemeGenerator extends Component {
 				</form>
 
 				<select 
-					value={this.state.allMemeImgs.url}
 					name="favImage"
 					onChange={this.handleChange} 
 				>
-					<option value={this.state.allMemeImgs.url}>-- SELECT A MEME --</option>
+					<option value="">-- SELECT A MEME --</option>
 					<MemeList 
 						data={this.state}
 					/>
