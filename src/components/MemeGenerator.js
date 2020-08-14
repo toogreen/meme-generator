@@ -150,7 +150,7 @@ class MemeGenerator extends Component {
 					<br />
 					<div className="imgContainer">
 						<div className="close" onClick={this.closeModal}>X</div>
-						<h1>Copy and paste the image{this.state.count > 1 && "s"} below</h1>
+						<h1>Copy and paste the image{this.state.count > 1 && "s"} from below</h1>
 						<span className="imgZone"></span>
 					</div>
 				</div>
