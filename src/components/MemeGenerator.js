@@ -2,8 +2,12 @@ import React, {Component} from "react"
 import Ad from "./Ad"
 import $ from "jquery"
 import domtoimage from "dom-to-image"
+//import ThumbList from "./ThumbList"
+import MemeList from "./MemeList"
+import memeDb from "./memeDb"
 
 class MemeGenerator extends Component {
+
 	constructor() {
 		super()
 		this.state = {
@@ -11,7 +15,8 @@ class MemeGenerator extends Component {
 			bottomTet: "",
 			randomImg: "http://i.imgflip.com/1bij.jpg",
 			allMemeImgs: [],
-			count: 0
+			count: 0,
+			favImage: ""
 		}
 		this.handleChange = this.handleChange.bind(this)
 		this.handleSubmit = this.handleSubmit.bind(this)
@@ -26,15 +31,13 @@ class MemeGenerator extends Component {
 				const {memes} = response.data
 
 				this.setState({ allMemeImgs: memes })
-				console.log(memes[1])
-
+				console.log(memes[0])
 			})
 	}
 
 	handleChange(event){
-		const {name, value} = event.target
-		this.setState({[name]: value})
-
+		const {name, value, type} = event.target
+		name === "favImage" ? this.setState({ randomImg: event.target.value }) : this.setState({[name]: value})
 	}
 
 	handleSubmit(event){
@@ -94,13 +97,14 @@ class MemeGenerator extends Component {
 		$('.hidden').hide();
 	}
 
+
 	render() {
 
 		return(
 			<main>
 				<form className="meme-form" onSubmit={this.handleSubmit}>
 
-				<button>Change image</button>
+				<button>Random image</button>
 
 				<input 
 					type="text"
@@ -123,6 +127,17 @@ class MemeGenerator extends Component {
 				<br />
 					
 				</form>
+
+				<select 
+					name="favImage"
+					onChange={this.handleChange} 
+				>
+					<option value="">-- Please Choose a MEME</option>
+					<MemeList 
+						handleChange={this.handleChange}
+						data={this.state}
+					/>
+				</select>
 
 				<div id="meme" className="meme"> 
 					<img src={this.state.randomImg} alt="" onClick={this.handleSubmit} />

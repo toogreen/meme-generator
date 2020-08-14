@@ -195,6 +195,20 @@ footer a, footer a:hover{
   left: -3%;
 }
 
+.thumbnail{
+  position: relative;
+  max-width: 20%;
+  max-height: 100px;
+  float: left;
+}
+
+.iframe{
+  position: relative;
+  scroll-behavior: scroll;
+  height: 100px;
+  width: 100%;
+}
+
 .close{
   display: none;
   position: relative;
