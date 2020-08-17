@@ -3,7 +3,7 @@ import Ad from "./Ad"
 import $ from "jquery"
 import domtoimage from "dom-to-image"
 import MemeList from "./MemeList"
-import {isSafari} from "react-device-detect"
+import {isSafari, isMobile, isIPad13, isIPhone13} from "react-device-detect"
 
 class MemeGenerator extends Component {
 
@@ -150,7 +150,8 @@ class MemeGenerator extends Component {
 
 				<div className="hidden">
 
-						<p>{(this.state.count > 0 && isSafari) && "If it didn't work on the last click, try clicking the above button one more time (Safari Bug)"}</p>
+						{/* Added this for warning users on iPad or iPhone or Safari that the image may not copy on first try - this is a bug i'm trying to figure out. */}
+						<p>{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "If it didn't work on the last click, try clicking the above button one more time (Apple Bug)"}</p>
 					
 					<br />
 					<div className="imgContainer">
