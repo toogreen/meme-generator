@@ -46,6 +46,17 @@ main{
   box-shadow: 3px 4px 4px #888888; */
 } 
 
+.langButton {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor:pointer;
+}
+
 .meme{
   position: relative;
   width: 90%;

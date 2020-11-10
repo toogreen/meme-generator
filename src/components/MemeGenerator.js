@@ -16,7 +16,8 @@ class MemeGenerator extends Component {
 			allMemeImgs: [],
 			count: 0,
 			favImage: "",
-			foo: ""
+			foo: "",
+			lang: false
 		}
 		this.handleChange = this.handleChange.bind(this)
 		this.handleSubmit = this.handleSubmit.bind(this)
@@ -98,20 +99,27 @@ class MemeGenerator extends Component {
 		$('.hidden').hide();
 	}
 
+	toggleLang() {
+        this.setState(prevState => ({ lang: !prevState.lang }));
+    }
+
 
 	render() {
 
 		return(
 			<main>
+
+				<button className="langButton" onClick={() => {this.toggleLang(); }} >{this.state.lang ? "EN" : "FR"}</button>
+
 				<form className="meme-form" onSubmit={this.handleSubmit}>
 
-				<button>Random image</button>
+				<button>{this.state.lang ? "Image aleatoire" : "Random Image"}</button>
 
 				<input 
 					type="text"
 					name="topText"
 					value={this.state.topText}
-					placeholder="Top Text" 
+					placeholder={this.state.lang ? "Texte du haut" : "Top Text"} 
 					onChange={this.handleChange} 
 				/>
 
@@ -121,7 +129,7 @@ class MemeGenerator extends Component {
 					type="text"
 					name="bottomText"
 					value={this.state.bottomText}
-					placeholder="Bottom Text" 
+					placeholder={this.state.lang ? "Texte du bas" : "Bottom Text"}
 					onChange={this.handleChange} 
 				/>
 
@@ -133,7 +141,7 @@ class MemeGenerator extends Component {
 					name="favImage"
 					onChange={this.handleChange} 
 				>
-					<option value="">-- SELECT A MEME --</option>
+					<option value="">{this.state.lang ? "CHOISIR UN MEME" : "SELECT A MEME"}</option>
 					<MemeList 
 						data={this.state}
 					/>
@@ -145,7 +153,7 @@ class MemeGenerator extends Component {
 					<h2 className="bottom">{this.state.bottomText}</h2>
 				</div>
 
-				<button id="buttonCopy" onClick={this.handleCopy}>Generate an Image to copy it elsewhere</button>
+				<button id="buttonCopy" onClick={this.handleCopy}>{this.state.lang ? "Generer une image pour la copier ailleurs" : "Generate an Image to copy it elsewhere"}</button>
 
 
 				<div className="hidden">
