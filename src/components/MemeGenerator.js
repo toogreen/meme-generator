@@ -69,7 +69,8 @@ class MemeGenerator extends Component {
 		    const img = new Image();
 		    img.src = dataUrl;
 
-		    $('.imgZone').append(this.state.count > 0 && "<hr />").append("<h2>Your generated image # " + this.state.count+ "</h2>")
+
+			$('.imgZone').append(this.state.count > 0 && "<hr />").append("<h2>Image # " + this.state.count+ "</h2>")
 		    $('.imgZone').append(img)
 		    $('.hidden').show();
 
@@ -158,13 +159,25 @@ class MemeGenerator extends Component {
 
 				<div className="hidden">
 
-						{/* Added this for warning users on iPad or iPhone or Safari that the image may not copy on first try - this is a bug i'm trying to figure out. */}
-						<p>{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "If it didn't work on the last click, try clicking the above button one more time (Apple Bug)"}</p>
+					{/* Added this for warning users on iPad or iPhone or Safari that the image may not copy on first try - this is a bug i'm trying to figure out. */}
+						{this.state.lang ? (
+							<p>{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "Erreur? Cliquez de nouveau sur le bouton (c'est un bogue d'Apple)"}</p>
+						) : (
+							<p>{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "If it didn't work on the last click, try clicking the above button one more time (Apple Bug)"}</p>
+						)
+						}
+						
 					
 					<br />
 					<div className="imgContainer">
 						<div className="close" onClick={this.closeModal}>X</div>
-						<h1>Copy and paste the image{this.state.count > 1 && "s"} from below</h1>
+							{this.state.lang ? (
+								<h1>Copiez et collez {this.state.count > 1 ? "les " : "l'"}image{this.state.count > 1 && "s"} ci-bas</h1>
+							) : (
+								<h1>Copy and paste the image{this.state.count > 1 && "s"} from below</h1>
+							)
+							}
+						
 						<span className="imgZone"></span>
 					</div>
 				</div>
