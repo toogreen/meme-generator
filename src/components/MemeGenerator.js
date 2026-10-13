@@ -27,14 +27,27 @@ class MemeGenerator extends Component {
 
 	componentDidMount() {
 		this.setState({loading: true})
-		fetch("https://api.imgflip.com/get_memes")
-			.then(response => response.json())
-			.then(response => {
-				const {memes} = response.data
 
-				this.setState({ allMemeImgs: memes })
-				console.log(memes[0])
-			})
+		// Each source is fetched independently so one being down doesn't break the other
+		const imgflip = fetch("https://api.imgflip.com/get_memes")
+			.then(response => response.json())
+			.then(response => response.data.memes.map(meme => ({id: meme.id, name: meme.name, url: meme.url})))
+			.catch(() => [])
+
+		const memegen = fetch("https://api.memegen.link/templates")
+			.then(response => response.json())
+			.then(templates => templates.map(template => ({id: "memegen-" + template.id, name: template.name, url: template.blank})))
+			.catch(() => [])
+
+		Promise.all([imgflip, memegen]).then(([imgflipMemes, memegenMemes]) => {
+			// Both sources share many classics, so drop duplicates by name (imgflip wins)
+			const normalize = name => name.toLowerCase().replace(/[^a-z0-9]/g, "")
+			const seen = new Set(imgflipMemes.map(meme => normalize(meme.name)))
+			const extras = memegenMemes.filter(meme => !seen.has(normalize(meme.name)))
+
+			const memes = [...imgflipMemes, ...extras].sort((a, b) => a.name.localeCompare(b.name))
+			this.setState({ allMemeImgs: memes, loading: false })
+		})
 	}
 
 	handleChange(event){
