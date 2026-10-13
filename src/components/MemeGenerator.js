@@ -11,7 +11,7 @@ class MemeGenerator extends Component {
 		super()
 		this.state = {
 			topText: "",
-			bottomTet: "",
+			bottomText: "",
 			randomImg: "http://i.imgflip.com/1bij.jpg",
 			allMemeImgs: [],
 			count: 0,
@@ -107,85 +107,106 @@ class MemeGenerator extends Component {
 
 	render() {
 
+		const {lang} = this.state
+
 		return(
 			<main>
 
-				<button className="langButton" onClick={() => {this.toggleLang(); }} >{this.state.lang ? "EN" : "FR"}</button>
+				<section className="card">
 
-				<form className="meme-form" onSubmit={this.handleSubmit}>
+					<div className="card-header">
+						<div>
+							<h1 className="card-title">{lang ? "Créez votre meme" : "Create your meme"}</h1>
+							<p className="card-subtitle">{lang ? "Choisissez une image, ajoutez du texte, partagez." : "Pick an image, add your text, share it."}</p>
+						</div>
+						<button type="button" className="langButton" onClick={() => {this.toggleLang(); }} >{lang ? "EN" : "FR"}</button>
+					</div>
 
-				<button>{this.state.lang ? "Image aleatoire" : "Random Image"}</button>
+					<div className="workspace">
 
-				<input 
-					type="text"
-					name="topText"
-					value={this.state.topText}
-					placeholder={this.state.lang ? "Texte du haut" : "Top Text"} 
-					onChange={this.handleChange} 
-				/>
+						<div className="controls">
+							<form className="meme-form" onSubmit={this.handleSubmit}>
 
-				<br />
-				
-				<input 
-					type="text"
-					name="bottomText"
-					value={this.state.bottomText}
-					placeholder={this.state.lang ? "Texte du bas" : "Bottom Text"}
-					onChange={this.handleChange} 
-				/>
+								<label className="field">
+									{lang ? "Texte du haut" : "Top text"}
+									<input 
+										type="text"
+										name="topText"
+										value={this.state.topText}
+										placeholder={lang ? "Texte du haut" : "Top Text"} 
+										onChange={this.handleChange} 
+									/>
+								</label>
 
-				<br />
-					
-				</form>
+								<label className="field">
+									{lang ? "Texte du bas" : "Bottom text"}
+									<input 
+										type="text"
+										name="bottomText"
+										value={this.state.bottomText}
+										placeholder={lang ? "Texte du bas" : "Bottom Text"}
+										onChange={this.handleChange} 
+									/>
+								</label>
 
-				<select 
-					name="favImage"
-					onChange={this.handleChange} 
-				>
-					<option value="">{this.state.lang ? "CHOISIR UN MEME" : "SELECT A MEME"}</option>
-					<MemeList 
-						data={this.state}
-					/>
-				</select>
+								<label className="field">
+									{lang ? "Modèle" : "Template"}
+									<select 
+										name="favImage"
+										onChange={this.handleChange} 
+									>
+										<option value="">{lang ? "CHOISIR UN MEME" : "SELECT A MEME"}</option>
+										<MemeList 
+											data={this.state}
+										/>
+									</select>
+								</label>
 
-				<div id="meme" className="meme"> 
-					<img src={this.state.randomImg} alt="" onClick={this.handleSubmit} />
-					<h2 className="top">{this.state.topText}</h2>
-					<h2 className="bottom">{this.state.bottomText}</h2>
-				</div>
+								<button type="submit" className="btn btn-secondary">🎲 {lang ? "Image aléatoire" : "Random Image"}</button>
 
-				<button id="buttonCopy" onClick={this.handleCopy}>{this.state.lang ? "Generer une image pour la copier ailleurs" : "Generate an Image to copy it elsewhere"}</button>
+							</form>
 
+							<button id="buttonCopy" className="btn btn-primary" onClick={this.handleCopy}>✨ {lang ? "Générer une image pour la copier ailleurs" : "Generate an Image to copy it elsewhere"}</button>
+						</div>
 
-				<div className="hidden">
+						<div className="preview">
+							<div className="meme-frame">
+								<div id="meme" className="meme"> 
+									<img src={this.state.randomImg} alt="" onClick={this.handleSubmit} />
+									<h2 className="top">{this.state.topText}</h2>
+									<h2 className="bottom">{this.state.bottomText}</h2>
+								</div>
+							</div>
+							<p className="hint">{lang ? "Astuce : cliquez sur l'image pour en obtenir une au hasard" : "Tip: click the image to get a random one"}</p>
+						</div>
+
+					</div>
+				</section>
+
+				<section className="hidden card">
 
 					{/* Added this for warning users on iPad or iPhone or Safari that the image may not copy on first try - this is a bug i'm trying to figure out. */}
-						{this.state.lang ? (
-							<p>{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "Erreur? Cliquez de nouveau sur le bouton (c'est un bogue d'Apple)"}</p>
-						) : (
-							<p>{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "If it didn't work on the last click, try clicking the above button one more time (Apple Bug)"}</p>
-						)
-						}
-						
-					
-					<br />
+					{lang ? (
+						<p className="warning">{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "Erreur? Cliquez de nouveau sur le bouton (c'est un bogue d'Apple)"}</p>
+					) : (
+						<p className="warning">{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "If it didn't work on the last click, try clicking the above button one more time (Apple Bug)"}</p>
+					)
+					}
+
 					<div className="imgContainer">
-						<div className="close" onClick={this.closeModal}>X</div>
-							{this.state.lang ? (
+						<div className="card-header">
+							{lang ? (
 								<h1>Copiez et collez {this.state.count > 1 ? "les " : "l'"}image{this.state.count > 1 && "s"} ci-bas</h1>
 							) : (
 								<h1>Copy and paste the image{this.state.count > 1 && "s"} from below</h1>
 							)
 							}
+							<button type="button" className="close" onClick={this.closeModal} aria-label="Close">✕</button>
+						</div>
 						
 						<span className="imgZone"></span>
 					</div>
-				</div>
-
-				
-
-				<br />
-				<br />
+				</section>
 
 				<Ad />
 
