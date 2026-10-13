@@ -4,7 +4,7 @@ import $ from "jquery"
 import domtoimage from "dom-to-image"
 import MemePicker from "./MemePicker"
 import InstallPrompt from "./InstallPrompt"
-import {isSafari, isMobile, isIPad13, isIPhone13} from "react-device-detect"
+import {isSafari, isIPad13, isIPhone13} from "react-device-detect"
 
 class MemeGenerator extends Component {
 
@@ -41,12 +41,18 @@ class MemeGenerator extends Component {
 			.catch(() => [])
 
 		Promise.all([imgflip, memegen]).then(([imgflipMemes, memegenMemes]) => {
-			// Both sources share many classics, so drop duplicates by name (imgflip wins)
+			// Both sources share many classics (and memegen lists a few twice), so drop
+			// duplicates by name, keeping the first one seen (imgflip wins)
 			const normalize = name => name.toLowerCase().replace(/[^a-z0-9]/g, "")
-			const seen = new Set(imgflipMemes.map(meme => normalize(meme.name)))
-			const extras = memegenMemes.filter(meme => !seen.has(normalize(meme.name)))
-
-			const memes = [...imgflipMemes, ...extras].sort((a, b) => a.name.localeCompare(b.name))
+			const seen = new Set()
+			const memes = [...imgflipMemes, ...memegenMemes]
+				.filter(meme => {
+					const key = normalize(meme.name)
+					if (seen.has(key)) return false
+					seen.add(key)
+					return true
+				})
+				.sort((a, b) => a.name.localeCompare(b.name))
 			this.setState({ allMemeImgs: memes, loading: false })
 		})
 	}

@@ -17,6 +17,8 @@ function InstallPrompt({lang}) {
 	useEffect(() => {
 		// Android / Chrome: hold on to the native prompt so our button can trigger it
 		const handleBeforeInstall = event => {
+			// On desktop, let the browser show its own install option
+			if (!(isMobile || isIPad13)) return
 			event.preventDefault()
 			setDeferredPrompt(event)
 		}
