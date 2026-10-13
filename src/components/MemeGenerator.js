@@ -3,6 +3,7 @@ import Ad from "./Ad"
 import $ from "jquery"
 import domtoimage from "dom-to-image"
 import MemeList from "./MemeList"
+import InstallPrompt from "./InstallPrompt"
 import {isSafari, isMobile, isIPad13, isIPhone13} from "react-device-detect"
 
 class MemeGenerator extends Component {
@@ -209,6 +210,8 @@ class MemeGenerator extends Component {
 				</section>
 
 				<Ad />
+
+				<InstallPrompt lang={lang} />
 
 			</main>
 		)
