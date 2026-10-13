@@ -543,3 +543,119 @@ footer a:hover {
   color: var(--text);
   background: var(--surface-strong);
 }
+
+/* ---------- Meme picker ---------- */
+
+.picker {
+  position: relative;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
+}
+
+.picker-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 40px 6px 8px;
+  font-size: 1rem;
+  text-align: left;
+  color: var(--text);
+  background-color: rgba(0, 0, 0, 0.3);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a7a3c2' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.picker-toggle:focus-visible,
+.picker-toggle[aria-expanded="true"] {
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.25);
+}
+
+.picker-label {
+  flex: 1;
+  min-width: 0;
+  padding-left: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.picker-thumb {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.picker-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 15;
+  padding: 8px;
+  background: #1a1828;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  animation: picker-pop 0.15s ease-out;
+}
+
+@keyframes picker-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.picker-search {
+  margin-bottom: 6px;
+}
+
+.picker-list {
+  max-height: 320px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  overscroll-behavior: contain;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  font-size: 0.95rem;
+  color: var(--text);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.picker-item.active {
+  background: var(--surface-strong);
+}
+
+.picker-item.selected {
+  background: rgba(139, 92, 246, 0.25);
+}
+
+.picker-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--muted);
+}

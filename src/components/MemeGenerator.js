@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import Ad from "./Ad"
 import $ from "jquery"
 import domtoimage from "dom-to-image"
-import MemeList from "./MemeList"
+import MemePicker from "./MemePicker"
 import InstallPrompt from "./InstallPrompt"
 import {isSafari, isMobile, isIPad13, isIPhone13} from "react-device-detect"
 
@@ -23,6 +23,7 @@ class MemeGenerator extends Component {
 		this.handleChange = this.handleChange.bind(this)
 		this.handleSubmit = this.handleSubmit.bind(this)
 		this.handleCopy = this.handleCopy.bind(this)
+		this.handleSelect = this.handleSelect.bind(this)
 	}
 
 	componentDidMount() {
@@ -31,12 +32,12 @@ class MemeGenerator extends Component {
 		// Each source is fetched independently so one being down doesn't break the other
 		const imgflip = fetch("https://api.imgflip.com/get_memes")
 			.then(response => response.json())
-			.then(response => response.data.memes.map(meme => ({id: meme.id, name: meme.name, url: meme.url})))
+			.then(response => response.data.memes.map(meme => ({id: meme.id, name: meme.name, url: meme.url, thumb: meme.url.replace("i.imgflip.com/", "i.imgflip.com/2/")})))
 			.catch(() => [])
 
 		const memegen = fetch("https://api.memegen.link/templates")
 			.then(response => response.json())
-			.then(templates => templates.map(template => ({id: "memegen-" + template.id, name: template.name, url: template.blank})))
+			.then(templates => templates.map(template => ({id: "memegen-" + template.id, name: template.name, url: template.blank, thumb: template.blank + "?width=96"})))
 			.catch(() => [])
 
 		Promise.all([imgflip, memegen]).then(([imgflipMemes, memegenMemes]) => {
@@ -52,8 +53,12 @@ class MemeGenerator extends Component {
 
 	handleChange(event){
 		const {name, value} = event.target
-		name === "favImage" ? this.setState({ randomImg: event.target.value }) : this.setState({[name]: value})
+		this.setState({[name]: value})
 
+	}
+
+	handleSelect(url){
+		this.setState({ randomImg: url })
 	}
 
 	handleSubmit(event){
@@ -163,18 +168,15 @@ class MemeGenerator extends Component {
 									/>
 								</label>
 
-								<label className="field">
+								<div className="field">
 									{lang ? "Modèle" : "Template"}
-									<select 
-										name="favImage"
-										onChange={this.handleChange} 
-									>
-										<option value="">{lang ? "CHOISIR UN MEME" : "SELECT A MEME"}</option>
-										<MemeList 
-											data={this.state}
-										/>
-									</select>
-								</label>
+									<MemePicker
+										memes={this.state.allMemeImgs}
+										selectedUrl={this.state.randomImg}
+										onSelect={this.handleSelect}
+										lang={lang}
+									/>
+								</div>
 
 								<button type="submit" className="btn btn-secondary">🎲 {lang ? "Image aléatoire" : "Random Image"}</button>
 
