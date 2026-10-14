@@ -1,6 +1,11 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, wait } from '@testing-library/react';
 import App from './App';
+import domtoimage from 'dom-to-image';
+
+jest.mock('dom-to-image', () => ({
+  toPng: jest.fn(() => Promise.resolve('data:image/png;base64,' + 'A'.repeat(2000)))
+}));
 
 // Mock fetch for meme APIs
 beforeEach(() => {
@@ -9,10 +14,13 @@ beforeEach(() => {
       json: () => Promise.resolve({ data: { memes: [] } })
     })
   );
+  window.scrollTo = jest.fn();
+  delete window.__FORCE_APPLE_DEVICE_FOR_TESTING__;
 });
 
 afterEach(() => {
   jest.restoreAllMocks();
+  delete window.__FORCE_APPLE_DEVICE_FOR_TESTING__;
 });
 
 test('renders meme generator header and clean form with three text inputs', () => {
@@ -361,4 +369,68 @@ test('supports drag and drop of local image files onto the meme preview', async 
 
   const memeImg = container.querySelector('#meme img');
   expect(memeImg.src).toContain('data:image/jpeg;base64');
+});
+
+test('generates image on the first click on Apple devices using warmup pass without warning', async () => {
+  window.__FORCE_APPLE_DEVICE_FOR_TESTING__ = true;
+  domtoimage.toPng.mockClear();
+  domtoimage.toPng.mockImplementation(() => Promise.resolve('data:image/png;base64,' + 'A'.repeat(2000)));
+
+  const { container, queryByText } = render(<App />);
+  const copyBtn = container.querySelector('#buttonCopy');
+
+  fireEvent.click(copyBtn);
+
+  // Wait for warmup pass + render pass to finish
+  await wait(() => {
+    expect(container.querySelector('.imgZone img')).toBeInTheDocument();
+  });
+
+  // Automatically executed warmup + final render on single click
+  expect(domtoimage.toPng).toHaveBeenCalledTimes(2);
+  expect(container.querySelector('.imgZone h2').textContent).toBe('Image # 1');
+
+  // No Apple bug warning message should exist
+  expect(queryByText(/Apple Bug/i)).toBeNull();
+  expect(queryByText(/bogue d'Apple/i)).toBeNull();
+});
+
+test('generates image directly on non-Apple devices on first click', async () => {
+  window.__FORCE_APPLE_DEVICE_FOR_TESTING__ = false;
+  domtoimage.toPng.mockClear();
+  domtoimage.toPng.mockImplementation(() => Promise.resolve('data:image/png;base64,' + 'A'.repeat(2000)));
+
+  const { container } = render(<App />);
+  const copyBtn = container.querySelector('#buttonCopy');
+
+  fireEvent.click(copyBtn);
+
+  await wait(() => {
+    expect(container.querySelector('.imgZone img')).toBeInTheDocument();
+  });
+
+  // Single render pass on non-Apple browsers
+  expect(domtoimage.toPng).toHaveBeenCalledTimes(1);
+  expect(container.querySelector('.imgZone h2').textContent).toBe('Image # 1');
+});
+
+test('retries image generation if first render produces blank canvas data', async () => {
+  window.__FORCE_APPLE_DEVICE_FOR_TESTING__ = false;
+  domtoimage.toPng.mockClear();
+  // First call returns blank (small) data, second returns valid image
+  domtoimage.toPng
+    .mockImplementationOnce(() => Promise.resolve('data:image/png;base64,tiny'))
+    .mockImplementationOnce(() => Promise.resolve('data:image/png;base64,' + 'B'.repeat(2000)));
+
+  const { container } = render(<App />);
+  const copyBtn = container.querySelector('#buttonCopy');
+
+  fireEvent.click(copyBtn);
+
+  await wait(() => {
+    expect(container.querySelector('.imgZone img')).toBeInTheDocument();
+  });
+
+  expect(domtoimage.toPng).toHaveBeenCalledTimes(2);
+  expect(container.querySelector('.imgZone img').src).toContain('B'.repeat(2000));
 });

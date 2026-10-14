@@ -4,7 +4,20 @@ import $ from "jquery"
 import domtoimage from "dom-to-image"
 import MemePicker from "./MemePicker"
 import InstallPrompt from "./InstallPrompt"
-import {isSafari, isIPad13, isIPhone13} from "react-device-detect"
+import {isSafari, isIOS, isMobileSafari} from "react-device-detect"
+
+export const isAppleDevice = () => {
+	if (typeof window === "undefined" || typeof navigator === "undefined") return false
+	if (window.__FORCE_APPLE_DEVICE_FOR_TESTING__ !== undefined) {
+		return Boolean(window.__FORCE_APPLE_DEVICE_FOR_TESTING__)
+	}
+	const ua = navigator.userAgent || ""
+	const isIOSDevice = Boolean(isIOS || isSafari || isMobileSafari || /iPad|iPhone|iPod/.test(ua))
+	const isMacTouch = Boolean(navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+	const isMacSafari = /Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR|Brave/.test(ua)
+	const isWebKitEngine = /AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg|OPR|Brave/.test(ua)
+	return isIOSDevice || isMacTouch || isMacSafari || isWebKitEngine
+}
 
 class MemeGenerator extends Component {
 
@@ -27,7 +40,8 @@ class MemeGenerator extends Component {
 			optionalX: 50,
 			optionalY: 50,
 			isDragging: null,
-			isDragOver: false
+			isDragOver: false,
+			isGenerating: false
 		}
 		this.memeRef = React.createRef()
 		this.handleChange = this.handleChange.bind(this)
@@ -325,46 +339,86 @@ class MemeGenerator extends Component {
 		}))
 	}
 
-	handleCopy(event){
+	async handleCopy(event) {
+		if (event && typeof event.preventDefault === "function") {
+			event.preventDefault()
+		}
 
-		event.preventDefault()
+		if (this.state.isGenerating) return
 
-		const node = this.memeRef.current || document.getElementById('meme');
-		if (node) node.classList.add('generating');
+		const node = this.memeRef.current || document.getElementById('meme')
+		if (!node) return
 
-		// Copy the content of the "meme" DIV and make it an image
-		const render = targetNode =>
-		  domtoimage.toPng(targetNode)
-		  .then(dataUrl => {
-		    if (targetNode) targetNode.classList.remove('generating');
-		    console.log(performance.now() - pf)
-		    const img = new Image();
-		    img.src = dataUrl;
+		node.classList.add('generating')
+		this.setState({ isGenerating: true })
 
-
-			$('.imgZone').append(this.state.count > 0 && "<hr />").append("<h2>Image # " + this.state.count+ "</h2>")
-		    $('.imgZone').append(img)
-		    $('.hidden').show();
-
-		  })
-		  .catch(error => {
-		    if (targetNode) targetNode.classList.remove('generating');
-		    console.error('oops, something went wrong!', error);
-		  });
-
-		var pf = performance.now();
-		render(node);
-
-		// Increment the value of count
-		this.setState(prevState => {
-			return {
-				count: prevState.count + 1
+		try {
+			// Ensure fonts are ready before rasterizing DOM into canvas
+			if (typeof document !== "undefined" && document.fonts && document.fonts.ready) {
+				try {
+					await document.fonts.ready
+				} catch (e) {
+					// Ignore font readiness errors
+				}
 			}
-		})
 
-		// scroll down to new image
-		window.scrollTo(0,document.body.scrollHeight);
- 
+			let dataUrl
+			// On Apple/Safari devices (iOS Safari, iPadOS, macOS Safari, and WebKit-based browsers),
+			// WebKit requires an initial warm-up render pass to decode SVG foreignObject assets and fonts
+			// into its raster cache. Running this warm-up pass programmatically ensures the image is
+			// generated successfully on the user's very first click without requiring a second click.
+			if (isAppleDevice()) {
+				try {
+					await domtoimage.toPng(node)
+				} catch (e) {
+					// Ignore warm-up pass error
+				}
+				await new Promise(resolve => setTimeout(resolve, 80))
+				dataUrl = await domtoimage.toPng(node)
+			} else {
+				dataUrl = await domtoimage.toPng(node)
+			}
+
+			// Fail-safe: if the render returned an unexpectedly empty/blank canvas (< 1000 chars), retry once
+			if (!dataUrl || dataUrl.length < 1000) {
+				await new Promise(resolve => setTimeout(resolve, 100))
+				dataUrl = await domtoimage.toPng(node)
+			}
+
+			if (node) node.classList.remove('generating')
+
+			const nextCount = this.state.count + 1
+			const img = new Image()
+			img.src = dataUrl
+
+			if (this.state.count > 0) {
+				$('.imgZone').append("<hr />")
+			}
+			$('.imgZone').append("<h2>Image # " + nextCount + "</h2>")
+			$('.imgZone').append(img)
+			$('.hidden').show()
+
+			this.setState({
+				count: nextCount,
+				isGenerating: false
+			})
+
+			// Scroll down to the newly generated image
+			const hiddenSection = document.querySelector('.hidden')
+			if (hiddenSection && typeof hiddenSection.scrollIntoView === 'function') {
+				hiddenSection.scrollIntoView({ behavior: 'smooth' })
+			} else if (typeof window !== "undefined" && typeof window.scrollTo === 'function') {
+				try {
+					window.scrollTo(0, document.body.scrollHeight)
+				} catch (e) {
+					// Ignore environments where window.scrollTo throws (e.g. jsdom)
+				}
+			}
+		} catch (error) {
+			if (node) node.classList.remove('generating')
+			console.error('oops, something went wrong!', error)
+			this.setState({ isGenerating: false })
+		}
 	}
 
 	closeModal() {
@@ -495,7 +549,17 @@ class MemeGenerator extends Component {
 
 							</form>
 
-							<button id="buttonCopy" className="btn btn-primary" onClick={this.handleCopy}>✨ {lang ? "Générer une image pour la copier ailleurs" : "Generate an Image to copy it elsewhere"}</button>
+							<button 
+								id="buttonCopy" 
+								className="btn btn-primary" 
+								onClick={this.handleCopy}
+								disabled={this.state.isGenerating}
+							>
+								{this.state.isGenerating 
+									? (lang ? "⏳ Génération en cours..." : "⏳ Generating image...") 
+									: (lang ? "✨ Générer une image pour la copier ailleurs" : "✨ Generate an Image to copy it elsewhere")
+								}
+							</button>
 						</div>
 
 						<div className="preview">
@@ -585,13 +649,6 @@ class MemeGenerator extends Component {
 
 				<section className="hidden card">
 
-					{/* Added this for warning users on iPad or iPhone or Safari that the image may not copy on first try - this is a bug i'm trying to figure out. */}
-					{lang ? (
-						<p className="warning">{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "Erreur? Cliquez de nouveau sur le bouton (c'est un bogue d'Apple)"}</p>
-					) : (
-						<p className="warning">{(this.state.count > 0 && (isSafari || isIPad13 || isIPhone13)) && "If it didn't work on the last click, try clicking the above button one more time (Apple Bug)"}</p>
-					)
-					}
 
 					<div className="imgContainer">
 						<div className="card-header">
