@@ -70,7 +70,16 @@ function MemePicker({memes, selectedUrl, onSelect, lang}) {
 				onClick={() => setOpen(!open)}
 			>
 				{selected && <img src={selected.thumb} alt="" className="picker-thumb" />}
-				<span className="picker-label">{selected ? selected.name : (lang ? "CHOISIR UN MEME" : "SELECT A MEME")}</span>
+				{!selected && selectedUrl && selectedUrl.startsWith("data:") && (
+					<img src={selectedUrl} alt="" className="picker-thumb" />
+				)}
+				<span className="picker-label">
+					{selected 
+						? selected.name 
+						: (selectedUrl && selectedUrl.startsWith("data:")
+							? (lang ? "Image personnalisée (locale)" : "Custom Image (local)")
+							: (lang ? "CHOISIR UN MEME" : "SELECT A MEME"))}
+				</span>
 			</button>
 
 			{open && (

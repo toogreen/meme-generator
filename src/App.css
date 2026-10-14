@@ -152,6 +152,33 @@ main {
   color: var(--muted);
 }
 
+.field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.btn-reset-pos {
+  padding: 3px 8px;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent-2);
+  background: rgba(236, 72, 153, 0.12);
+  border: 1px solid rgba(236, 72, 153, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset-pos:hover {
+  color: white;
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+}
+
 input[type="text"],
 select {
   width: 100%;
@@ -230,6 +257,22 @@ button {
   background: rgba(255, 255, 255, 0.14);
 }
 
+.upload-btn {
+  cursor: pointer;
+  margin: 0;
+  text-align: center;
+}
+
+.privacy-note {
+  margin: -6px 0 0;
+  font-size: 0.76rem;
+  color: var(--muted);
+  text-align: center;
+  opacity: 0.85;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
 .btn-primary {
   margin-top: 14px;
   border: none;
@@ -285,6 +328,30 @@ button {
   overflow: hidden;
   border-radius: calc(var(--radius) - 7px);
   background: #000;
+  transition: outline 0.2s ease;
+}
+
+.meme.drag-over {
+  outline: 3px dashed var(--accent-1);
+  outline-offset: -3px;
+}
+
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(11, 10, 20, 0.88);
+  backdrop-filter: blur(6px);
+  z-index: 20;
+  pointer-events: none;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: white;
+  border-radius: calc(var(--radius) - 7px);
 }
 
 .meme > img {
@@ -295,11 +362,10 @@ button {
 
 .meme > h2 {
   position: absolute;
-  width: 90%;
-  left: 50%;
-  transform: translate(-50%);
-  margin: 15px 0;
-  padding: 0 5px;
+  max-width: 90%;
+  width: max-content;
+  margin: 0;
+  padding: 4px 10px;
   text-align: center;
   font-family: impact, sans-serif;
   font-size: 1.8em;
@@ -308,6 +374,13 @@ button {
   color: white;
   letter-spacing: 1px;
   word-wrap: break-word;
+  overflow-wrap: break-word;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  cursor: grab;
+  border-radius: 8px;
+  box-sizing: border-box;
   text-shadow:
     2px 2px 0 #000,
     -2px -2px 0 #000,
@@ -317,14 +390,34 @@ button {
     2px 0 0 #000,
     0 -2px 0 #000,
     2px 2px 5px #000;
+  transition: outline 0.15s ease, background-color 0.15s ease;
 }
 
-.top {
-  top: 0;
+.meme > h2:empty {
+  display: none;
 }
 
-.bottom {
-  bottom: 0;
+.meme > h2:hover {
+  outline: 2px dashed rgba(255, 255, 255, 0.7);
+  outline-offset: 4px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.meme > h2.dragging {
+  cursor: grabbing;
+  outline: 2px dashed var(--accent-2);
+  outline-offset: 4px;
+  background-color: rgba(236, 72, 153, 0.18);
+}
+
+.meme > h2:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 4px;
+}
+
+.meme.generating > h2 {
+  outline: none !important;
+  background-color: transparent !important;
 }
 
 .hint {
