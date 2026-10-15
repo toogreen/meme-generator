@@ -118,12 +118,24 @@ main {
 .workspace {
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-areas:
+    "preview"
+    "controls";
   gap: 24px;
+}
+
+.controls {
+  grid-area: controls;
+}
+
+.preview {
+  grid-area: preview;
 }
 
 @media (min-width: 860px) {
   .workspace {
     grid-template-columns: 340px 1fr;
+    grid-template-areas: "controls preview";
     align-items: start;
   }
 
