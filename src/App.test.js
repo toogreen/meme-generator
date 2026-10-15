@@ -434,3 +434,27 @@ test('retries image generation if first render produces blank canvas data', asyn
   expect(domtoimage.toPng).toHaveBeenCalledTimes(2);
   expect(container.querySelector('.imgZone img').src).toContain('B'.repeat(2000));
 });
+
+test('generates image on initial default template without changing the image (secure HTTPS)', async () => {
+  domtoimage.toPng.mockClear();
+  domtoimage.toPng.mockImplementation(() => Promise.resolve('data:image/png;base64,' + 'C'.repeat(2000)));
+
+  const { container } = render(<App />);
+  const previewImg = container.querySelector('#meme img');
+
+  // Verify the default initial image uses HTTPS
+  expect(previewImg.src).toMatch(/^https:\/\//);
+  expect(previewImg.src).toContain('i.imgflip.com/1bij.jpg');
+  expect(previewImg).toHaveAttribute('crossorigin', 'anonymous');
+
+  // Click generate directly without changing image
+  const copyBtn = container.querySelector('#buttonCopy');
+  fireEvent.click(copyBtn);
+
+  await wait(() => {
+    expect(container.querySelector('.imgZone img')).toBeInTheDocument();
+  });
+
+  expect(domtoimage.toPng).toHaveBeenCalled();
+  expect(container.querySelector('.imgZone h2').textContent).toBe('Image # 1');
+});

@@ -9,7 +9,7 @@ function MemePicker({memes, selectedUrl, onSelect, lang}) {
 	const searchRef = useRef(null)
 	const listRef = useRef(null)
 
-	const selected = memes.find(meme => meme.url === selectedUrl)
+	const selected = memes.find(meme => meme.url === selectedUrl || (selectedUrl && meme.url === selectedUrl.replace(/^http:\/\//i, "https://")))
 	const filtered = memes.filter(meme => meme.name.toLowerCase().includes(query.trim().toLowerCase()))
 
 	// Close when clicking or tapping outside the picker

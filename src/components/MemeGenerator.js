@@ -19,6 +19,8 @@ export const isAppleDevice = () => {
 	return isIOSDevice || isMacTouch || isMacSafari || isWebKitEngine
 }
 
+export const ensureHttps = url => (typeof url === "string" ? url.replace(/^http:\/\//i, "https://") : url)
+
 class MemeGenerator extends Component {
 
 	constructor() {
@@ -27,7 +29,7 @@ class MemeGenerator extends Component {
 			topText: "",
 			bottomText: "",
 			optionalText: "",
-			randomImg: "http://i.imgflip.com/1bij.jpg",
+			randomImg: "https://i.imgflip.com/1bij.jpg",
 			allMemeImgs: [],
 			count: 0,
 			favImage: "",
@@ -71,12 +73,28 @@ class MemeGenerator extends Component {
 		// Each source is fetched independently so one being down doesn't break the other
 		const imgflip = fetch("https://api.imgflip.com/get_memes")
 			.then(response => response.json())
-			.then(response => response.data.memes.map(meme => ({id: meme.id, name: meme.name, url: meme.url, thumb: meme.url.replace("i.imgflip.com/", "i.imgflip.com/2/")})))
+			.then(response => response.data.memes.map(meme => {
+				const url = ensureHttps(meme.url)
+				return {
+					id: meme.id,
+					name: meme.name,
+					url: url,
+					thumb: url.replace("i.imgflip.com/", "i.imgflip.com/2/")
+				}
+			}))
 			.catch(() => [])
 
 		const memegen = fetch("https://api.memegen.link/templates")
 			.then(response => response.json())
-			.then(templates => templates.map(template => ({id: "memegen-" + template.id, name: template.name, url: template.blank, thumb: template.blank + "?width=96"})))
+			.then(templates => templates.map(template => {
+				const url = ensureHttps(template.blank)
+				return {
+					id: "memegen-" + template.id,
+					name: template.name,
+					url: url,
+					thumb: url + "?width=96"
+				}
+			}))
 			.catch(() => [])
 
 		Promise.all([imgflip, memegen]).then(([imgflipMemes, memegenMemes]) => {
@@ -112,7 +130,7 @@ class MemeGenerator extends Component {
 	}
 
 	handleSelect(url){
-		this.setState({ randomImg: url })
+		this.setState({ randomImg: ensureHttps(url) })
 	}
 
 	handleSubmit(event){
@@ -123,7 +141,7 @@ class MemeGenerator extends Component {
 		const randNum = Math.floor(Math.random() * this.state.allMemeImgs.length)
 
 		// get the meme from that index
-		const randMemeImg = this.state.allMemeImgs[randNum].url
+		const randMemeImg = ensureHttps(this.state.allMemeImgs[randNum].url)
 
 		// set "randomImg" to the ".url"  of the random item I grabbed
 		this.setState({ randomImg: randMemeImg})
@@ -348,6 +366,12 @@ class MemeGenerator extends Component {
 
 		const node = this.memeRef.current || document.getElementById('meme')
 		if (!node) return
+
+		// Ensure image src in preview DOM is https to prevent Mixed Content blocking in Chrome
+		const imgElement = node.querySelector('img')
+		if (imgElement && imgElement.src && imgElement.src.startsWith('http://')) {
+			imgElement.src = imgElement.src.replace(/^http:\/\//i, 'https://')
+		}
 
 		node.classList.add('generating')
 		this.setState({ isGenerating: true })
@@ -583,6 +607,7 @@ class MemeGenerator extends Component {
 										alt="" 
 										onClick={this.handleImageClick}
 										draggable={false} 
+										crossOrigin="anonymous"
 									/>
 									<h2 
 										className={`top ${this.state.isDragging === "top" ? "dragging" : ""}`}
