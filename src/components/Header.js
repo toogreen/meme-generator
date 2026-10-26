@@ -4,7 +4,7 @@ function Header() {
 	return (
 		<header className="navbar">
 			<img 
-				src="/meme/img/Trollface.png" 
+				src={`${process.env.PUBLIC_URL}/img/Trollface.png`} 
 				alt="Problem?" 
 			/>
 	 		<p>Meme Generator</p>
