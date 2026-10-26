@@ -1,7 +1,7 @@
 /* Hand-written service worker: caches the app shell so the app can be
    installed and opened offline. Bump CACHE_NAME to force an update. */
 
-const CACHE_NAME = 'meme-generator-v1'
+const CACHE_NAME = 'meme-generator-v2'
 
 const APP_SHELL = [
   './',
@@ -44,8 +44,11 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const copy = response.clone()
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy))
+          // Only the app itself is the offline shell, not other pages like privacy.html
+          if (url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
+            const copy = response.clone()
+            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy))
+          }
           return response
         })
         .catch(() => caches.match('./index.html'))

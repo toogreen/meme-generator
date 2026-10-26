@@ -558,6 +558,95 @@ footer a:hover {
   text-decoration: underline;
 }
 
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+}
+
+.footer-links a,
+.footer-links button {
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+}
+
+.footer-links button {
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+.footer-links button:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Cookie consent ---------- */
+
+/* Sits above the install prompt, which shares the bottom of the screen */
+.cookie-consent {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 30;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px;
+  background: rgba(26, 24, 40, 0.97);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: install-slide-up 0.4s ease-out;
+}
+
+.cookie-text {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.cookie-text p {
+  margin: 0 0 8px;
+}
+
+.cookie-text strong {
+  color: var(--text);
+}
+
+.cookie-text a {
+  color: var(--text);
+}
+
+.cookie-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* Accept and Decline are deliberately styled the same so neither is nudged */
+.cookie-button {
+  flex: 1;
+  padding: 11px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.cookie-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
 /* ---------- Install prompt ---------- */
 
 .install-prompt {
