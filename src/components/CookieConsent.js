@@ -24,12 +24,12 @@ function CookieConsent() {
 			<div className="cookie-text">
 				<p lang="fr">
 					<strong>Témoins (cookies)</strong> — Avec votre accord, nous utilisons Google Analytics et Google AdSense,
-					qui déposent des témoins pour mesurer l'audience et afficher des publicités, possiblement personnalisées.
+					qui déposent des témoins pour mesurer l'audience et permettre à Google et à ses partenaires d'afficher des publicités, possiblement personnalisées.
 					Vos images restent toujours sur votre appareil.
 				</p>
 				<p lang="en">
 					<strong>Cookies</strong> — With your consent, we use Google Analytics and Google AdSense, which set cookies
-					to measure traffic and show ads, possibly personalized. Your images always stay on your device.
+					to measure traffic and let Google and its partners show ads, possibly personalized. Your images always stay on your device.
 				</p>
 				<a href={process.env.PUBLIC_URL + "/privacy.html"} target="_blank" rel="noopener noreferrer">
 					Politique de confidentialité / Privacy policy

@@ -5,7 +5,7 @@
 const CONSENT_KEY = "cookieConsent"
 const CONSENT_MAX_AGE = 1000 * 60 * 60 * 24 * 395 // ~13 months
 const GA_ID = "G-XYLQP27RQQ"
-const ADSENSE_CLIENT = "ca-pub-7401520800104068"
+const ADSENSE_CLIENT = "ca-pub-5829964164858117"
 
 export const OPEN_SETTINGS_EVENT = "open-cookie-settings"
 

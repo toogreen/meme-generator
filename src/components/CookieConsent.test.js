@@ -36,7 +36,7 @@ test('accepting loads Google Analytics and AdSense', () => {
   expect(getConsent()).toBe('granted');
   const srcs = trackerScripts().map(s => s.src);
   expect(srcs.some(src => src.includes('G-XYLQP27RQQ'))).toBe(true);
-  expect(srcs.some(src => src.includes('ca-pub-7401520800104068'))).toBe(true);
+  expect(srcs.some(src => src.includes('ca-pub-5829964164858117'))).toBe(true);
 });
 
 test('does not show again once a choice is stored, but the footer link reopens it', () => {
